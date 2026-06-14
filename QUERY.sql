@@ -58,3 +58,90 @@ INSERT INTO Bookings (booking_id, user_id, match_id, seat_number, payment_status
 (503, 2, 101, 'A-13', 'Confirmed', 150.00),
 (504, 2, 101, NULL, NULL, 150.00),
 (505, 3, 102, 'C-20', 'Pending', 120.00);
+
+
+
+
+
+--==== QUERY 1 =======
+SELECT
+  match_id,
+  fixture,
+  round(base_ticket_price) AS base_ticket_price
+FROM
+  matches
+WHERE
+  tournament_category = 'Champions League'
+  AND match_status = 'Available';
+
+--==== QUERY 2 =======
+SELECT
+  user_id,
+  full_name,
+  email
+FROM
+  users
+WHERE
+  full_name ILIKE 'Tanvir%'
+  OR full_name ILIKE '%Haque%';
+
+--==== QUERY 3 =======
+SELECT
+  booking_id,
+  user_id,
+  match_id,
+  coalesce(payment_status, 'Action Required') AS payment_status
+FROM
+  bookings
+WHERE
+  payment_status IS NULL;
+
+--==== QUERY 4 =======
+SELECT
+  b.booking_id,
+  u.full_name,
+  m.fixture,
+  round(total_cost) AS total_cost
+FROM
+  bookings AS b
+  INNER JOIN users AS u ON b.user_id = u.user_id
+  INNER JOIN matches AS m ON b.match_id = m.match_id;
+
+  --==== QUERY 5 =======
+  SELECT
+  u.user_id,
+  u.full_name,
+  b.booking_id
+FROM
+  users AS u
+  LEFT JOIN bookings AS b ON u.user_id = b.user_id;
+
+  --==== QUERY 6 =======
+  SELECT
+  booking_id,
+  match_id,
+  round(total_cost) AS total_cost
+FROM
+  bookings
+WHERE
+  total_cost > (
+    SELECT
+      avg(total_cost)
+    FROM
+      bookings
+  );
+
+
+  ----==== QUERY 7 =======
+  SELECT
+  match_id,
+  fixture,
+  round(base_ticket_price) AS base_ticket_price
+FROM
+  matches
+ORDER BY
+  base_ticket_price DESC
+OFFSET
+  1
+LIMIT
+  2;
